@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Link Visualize",
+  "name": "Link Target",
   "version": "1.0.0",
-  "description": "This is a Chrome extension to visualize link details",
+  "description": "Displays the target of the link when the cursor is applied.",
   "icons": {
     "16": "icons/icon-16.png",
     "48": "icons/icon-48.png",
