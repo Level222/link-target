@@ -14,8 +14,20 @@
         "<all_urls>"
       ],
       "js": [
-        "content-script.js"
+        "append-iframe.js"
       ]
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "link-listener.js"
+      ],
+      "all_frames": true
     }
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }
