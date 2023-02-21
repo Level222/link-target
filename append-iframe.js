@@ -1,9 +1,8 @@
 "use strict";
 
 const iframe = document.createElement("iframe");
-iframe.style = "all:initial;border:none;position:fixed;z-index:2147483647;width:20px;height:20px;bottom:0;right:0";
 
-const toSVGElem = svg => `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="arcs">${svg}</svg>`;
+const toSVGElem = svg => `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#393e40" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="arcs">${svg}</svg>`;
 
 const icons = new Map([
   ["_self", '<circle cx="12" cy="12" r="10"></circle>'],
@@ -15,16 +14,25 @@ const icons = new Map([
 const iconArea = document.createElement("div");
 iconArea.style = "display:flex;align-items:center;justify-content:center;width:20px;height:20px";
 
+const clearAttributes = elem => {
+  for (const attr of elem.attributes) {
+    elem.removeAttribute(attr);
+  }
+};
+
 const targets = [...icons.keys()];
 const formatLinkTarget = target => targets.includes(target) ? target : "_self";
 
 let lastTarget;
 
 const addIframe = linkTarget => {
+  clearAttributes(iframe);
+  iframe.style = "all:initial;border:none;position:fixed;z-index:2147483647;width:20px;height:20px;bottom:0;right:0;box-shadow:0 0 3px #bbb;border:.1px solid #aaa;border-top-left-radius:3px";
+
   if (!iframe.isConnected) {
     window.top.document.body.append(iframe);
     const iframeBody = iframe.contentDocument.body;
-    iframeBody.style = "margin:0;padding:0;background-color:#1ba;over-flow:hidden";
+    iframeBody.style = "margin:0;padding:0;background-color:#dfe1e7;over-flow:hidden";
     iframeBody.replaceChildren(iconArea);
   }
 
