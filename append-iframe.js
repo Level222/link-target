@@ -43,10 +43,10 @@ const removeIframe = () => {
 
 const showLinkTarget = message => {
   switch (message.msg) {
-    case "add-iframe":
+    case "addIframe":
       addIframe(message.linkTarget);
       break;
-    case "remove-iframe":
+    case "removeIframe":
       removeIframe();
       break;
   }

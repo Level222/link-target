@@ -14,15 +14,15 @@ const sendAnchorMsg = e => {
   const targetLink = getParentAnchor(e.target);
 
   if (targetLink) {
-    msgData.msg = "add-iframe";
+    msgData.msg = "addIframe";
     msgData.linkTarget = targetLink.target;
   } else {
-    msgData.msg = "remove-iframe";
+    msgData.msg = "removeIframe";
   }
 
   chrome.runtime.sendMessage({
-    sendBack: true,
-    data: msgData
+    msg: "sendBack",
+    sendBackData: msgData
   });
 };
 
