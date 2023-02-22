@@ -8,10 +8,8 @@ const getParentAnchor = elem => {
   return currentElem;
 };
 
-const sendAnchorMsg = e => {
+const sendAnchorMsg = targetLink => {
   const msgData = {};
-
-  const targetLink = getParentAnchor(e.target);
 
   if (targetLink) {
     msgData.msg = "addIframe";
@@ -26,4 +24,6 @@ const sendAnchorMsg = e => {
   });
 };
 
-document.addEventListener("mousemove", sendAnchorMsg);
+document.addEventListener("mousemove", e => sendAnchorMsg(getParentAnchor(e.target)));
+
+document.addEventListener("scroll", () => sendAnchorMsg(document.querySelector("a:hover")), true);
