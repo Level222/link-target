@@ -1,61 +1,103 @@
 "use strict";
 
-const iframe = document.createElement("iframe");
+class SVGIcons {
+  #icons;
+  #keys;
 
-const toSVGElem = svg => `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#393e40" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="arcs">${svg}</svg>`;
-
-const icons = new Map([
-  ["_self", '<circle cx="12" cy="12" r="10"></circle>'],
-  ["_blank", '<g fill="none" fill-rule="evenodd"><path d="M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2h5M15 3h6v6M10 14L20.2 3.8"/></g>'],
-  ["_parent", '<path d="M18 15l-6-6-6 6"/>'],
-  ["_top", '<path d="M17 11l-5-5-5 5M17 18l-5-5-5 5"/>']
-].map(([target, svg]) => [target, toSVGElem(svg)]));
-
-const iconArea = document.createElement("div");
-iconArea.style = "display:flex;align-items:center;justify-content:center;width:20px;height:20px";
-
-const clearAttributes = elem => {
-  for (const attr of elem.attributes) {
-    elem.removeAttribute(attr);
-  }
-};
-
-const targets = [...icons.keys()];
-const formatLinkTarget = target => targets.includes(target) ? target : "_self";
-
-let lastTarget;
-
-const addIframe = linkTarget => {
-  clearAttributes(iframe);
-  iframe.style = "all:initial;border:none;position:fixed;z-index:2147483647;width:20px;height:20px;bottom:0;right:0;box-shadow:0 0 3px #bbb;border-width:.1px;border-style:solid none none solid;border-color:#aaa;border-top-left-radius:3px";
-
-  if (!iframe.isConnected) {
-    window.top.document.body.append(iframe);
-    const iframeBody = iframe.contentDocument.body;
-    iframeBody.style = "margin:0;padding:0;background-color:#dfe1e7;over-flow:hidden";
-    iframeBody.replaceChildren(iconArea);
+  constructor(icons) {
+    this.#icons = this.#objectMap(icons, (svg) => this.#strToSVG(svg));
+    this.#keys = Object.keys(this.#icons);
   }
 
-  const currentTarget = formatLinkTarget(linkTarget);
-  if (currentTarget !== lastTarget) {
-    iconArea.innerHTML = icons.get(currentTarget);
-    lastTarget = currentTarget;
+  keyIncludes(key) {
+    return this.#keys.includes(key);
   }
-};
 
-const removeIframe = () => {
-  if (iframe.isConnected) {
-    iframe.remove();
+  get(key) {
+    return this.#icons[key];
   }
-};
+
+  #objectMap(obj, callback) {
+    return Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [key, callback(value, key, obj)])
+    );
+  }
+
+  #strToSVG(svg) {
+    const template = document.createElement("template");
+    template.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#393e40" stroke-width="2.5" stroke-linecap="square" stroke-linejoin="arcs">${svg}</svg>`;
+    return template.content.firstChild;
+  }
+}
+
+class IconArea {
+  #iconArea = document.createElement("div");
+  #icons = new SVGIcons({
+    _self: '<circle cx="12" cy="12" r="10"></circle>',
+    _blank: '<g fill="none" fill-rule="evenodd"><path d="M18 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2h5M15 3h6v6M10 14L20.2 3.8"/></g>',
+    _parent: '<path d="M18 15l-6-6-6 6"/>',
+    _top: '<path d="M17 11l-5-5-5 5M17 18l-5-5-5 5"/>'
+  });
+  #lastTarget = null;
+
+  constructor() {
+    this.#iconArea.style = "display:flex;align-items:center;justify-content:center;width:20px;height:20px";
+  }
+
+  setIcon(target) {
+    const currentTarget = this.#icons.keyIncludes(target) ? target : "_self";
+
+    if (currentTarget !== this.#lastTarget) {
+      this.#iconArea.replaceChildren(this.#icons.get(currentTarget));
+      this.#lastTarget = currentTarget;
+    }
+  }
+
+  getArea() {
+    return this.#iconArea;
+  }
+}
+
+class IconIframe {
+  #iframe = document.createElement("iframe");
+  #iconArea = new IconArea();
+
+  #clearAttributes() {
+    for (const attr of this.#iframe.attributes) {
+      this.#iframe.removeAttribute(attr);
+    }
+  }
+
+  add(linkTarget) {
+    this.#clearAttributes();
+    this.#iframe.style = "all:initial;border:none;position:fixed;z-index:2147483647;width:20px;height:20px;bottom:0;right:0;box-shadow:0 0 3px #bbb;border-width:.1px;border-style:solid none none solid;border-color:#aaa;border-top-left-radius:3px";
+
+    this.#iconArea.setIcon(linkTarget);
+
+    if (!this.#iframe.isConnected) {
+      window.top.document.body.append(this.#iframe);
+      const iframeBody = this.#iframe.contentDocument.body;
+      iframeBody.style = "margin:0;padding:0;background-color:#dfe1e7;over-flow:hidden";
+      iframeBody.replaceChildren(this.#iconArea.getArea());
+    }
+  }
+
+  remove() {
+    if (this.#iframe.isConnected) {
+      this.#iframe.remove();
+    }
+  }
+}
+
+const iconIframe = new IconIframe();
 
 const showLinkTarget = message => {
   switch (message.msg) {
     case "addIframe":
-      addIframe(message.linkTarget);
+      iconIframe.add(message.linkTarget);
       break;
     case "removeIframe":
-      removeIframe();
+      iconIframe.remove();
       break;
   }
 };
