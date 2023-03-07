@@ -77,6 +77,16 @@ class IconIframe {
     }
   }
 
+  #initIframe() {
+    this.#clearAttributes();
+    this.#iframe.style = "all:initial;border:none;position:fixed;z-index:2147483647;width:20px;height:20px;bottom:0;right:0;box-shadow:0 0 3px #bbb;border-width:.1px;border-style:solid none none solid;border-color:#aaa;border-top-left-radius:3px;transition:opacity 500ms 250ms;opacity:0";
+    window.document.body.append(this.#iframe);
+
+    const iframeBody = this.#iframe.contentDocument.body;
+    iframeBody.style = "margin:0;padding:0;background-color:#dfe1e7;over-flow:hidden";
+    iframeBody.replaceChildren(this.#iconArea.getArea());
+  }
+
   add(linkTarget) {
     this.#iconArea.setIcon(linkTarget);
 
@@ -85,13 +95,7 @@ class IconIframe {
     }
 
     if (!this.#iframe.isConnected) {
-      this.#clearAttributes();
-      this.#iframe.style = "all:initial;border:none;position:fixed;z-index:2147483647;width:20px;height:20px;bottom:0;right:0;box-shadow:0 0 3px #bbb;border-width:.1px;border-style:solid none none solid;border-color:#aaa;border-top-left-radius:3px;transition:opacity 500ms 250ms;opacity:0";
-      window.document.body.append(this.#iframe);
-
-      const iframeBody = this.#iframe.contentDocument.body;
-      iframeBody.style = "margin:0;padding:0;background-color:#dfe1e7;over-flow:hidden";
-      iframeBody.replaceChildren(this.#iconArea.getArea());
+      this.#initIframe();
     }
 
     this.#exist = true;
@@ -108,7 +112,7 @@ class IconIframe {
 
 const iconIframe = new IconIframe();
 
-const showLinkTarget = message => {
+const showLinkTarget = (message) => {
   switch (message.msg) {
     case "addIframe":
       iconIframe.add(message.linkTarget);

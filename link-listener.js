@@ -1,6 +1,6 @@
 "use strict";
 
-const getParentAnchor = elem => {
+const getParentAnchor = (elem) => {
   let currentElem = elem;
   while (currentElem && currentElem.nodeName.toLowerCase() !== "a") {
     currentElem = currentElem.parentNode;
@@ -8,7 +8,7 @@ const getParentAnchor = elem => {
   return currentElem;
 };
 
-const sendAnchorMsg = targetLink => {
+const sendAnchorMsg = (targetLink) => {
   const msgData = {};
 
   if (targetLink) {
@@ -24,6 +24,6 @@ const sendAnchorMsg = targetLink => {
   });
 };
 
-document.addEventListener("mousemove", e => sendAnchorMsg(getParentAnchor(e.target)));
+document.addEventListener("mousemove", (e) => sendAnchorMsg(getParentAnchor(e.target)));
 
 document.addEventListener("scroll", () => sendAnchorMsg(document.querySelector("a:hover")), true);
